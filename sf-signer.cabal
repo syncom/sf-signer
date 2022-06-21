@@ -1,0 +1,78 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           sf-signer
+version:        0.0.0
+description:    Please see the README on GitHub at <https://github.com/syncom/sf-signer#readme>
+homepage:       https://github.com/syncom/sf-signer#readme
+bug-reports:    https://github.com/syncom/sf-signer/issues
+author:         Ning Shang
+maintainer:     syncom.dev@gmail.com
+copyright:      2022 Ning Shang
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/syncom/sf-signer
+
+library
+  exposed-modules:
+      SignerLib
+      CliLib
+  other-modules:
+      Paths_sf_signer
+  hs-source-dirs:
+      src
+  build-depends:
+      HsOpenSSL
+    , base >=4.7 && <5
+    , bytestring
+    , cryptonite
+    , foldl
+    , text
+    , turtle
+  default-language: Haskell2010
+
+executable sfsigner
+  main-is: Main.hs
+  other-modules:
+      Paths_sf_signer
+  hs-source-dirs:
+      app
+  ghc-options: -static -threaded -rtsopts -with-rtsopts=-N
+  cc-options: -static
+  ld-options: -static -pthread -fuse-ld=bfd
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , cryptonite
+    , sf-signer
+    , text
+    , turtle
+  default-language: Haskell2010
+
+test-suite sf-signer-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_sf_signer
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      QuickCheck
+    , base >=4.7 && <5
+    , bytestring
+    , cryptonite
+    , foldl
+    , sf-signer
+    , text
+    , turtle
+  default-language: Haskell2010
