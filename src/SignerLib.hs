@@ -20,6 +20,7 @@ import OpenSSL.PEM
 import OpenSSL.EVP.PKey
 import OpenSSL.RSA
 import Data.List.NonEmpty
+import qualified Data.ByteString.Lazy.Char8 as Char8
 
 sha256Sum :: Turtle.FilePath -> IO Text
 sha256Sum f = do
@@ -43,7 +44,8 @@ hasCommand cmd = do
 -- constraint, only RSA keys are supported.
 smimeSign :: Turtle.FilePath -> Turtle.FilePath -> IO Text
 smimeSign payload_file certificate_file = do
-  payload <- readFile $ T.unpack  (format fp payload_file)
+  payload' <- L.readFile $ T.unpack  (format fp payload_file)
+  let payload = Char8.unpack payload'
   certificate <- readFile (T.unpack (format fp certificate_file))
   certificate_x509 <- readX509 certificate
   privateKeyStr <- getEnv "SFSIGNER_PRIVATE_KEY"
@@ -53,7 +55,8 @@ smimeSign payload_file certificate_file = do
 
 smimeVerify :: Turtle.FilePath -> Turtle.FilePath -> Turtle.FilePath -> Maybe Turtle.FilePath -> IO Bool
 smimeVerify content_file signature_file certificate_file cacert_file = do
-  payload <-  readFile $ T.unpack  (format fp content_file)
+  payload' <- L.readFile $ T.unpack  (format fp content_file)
+  let payload = Char8.unpack payload'
   signature <- readFile (T.unpack  (format fp signature_file))
   signature_pkcs7 <- readPkcs7 signature
   certificate <- readFile (T.unpack (format fp certificate_file))
