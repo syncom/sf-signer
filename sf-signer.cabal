@@ -47,8 +47,6 @@ executable sfsigner
   hs-source-dirs:
       app
   ghc-options: -static -threaded -rtsopts -with-rtsopts=-N
-  cc-options: -static
-  ld-options: -static -pthread -fuse-ld=bfd
   build-depends:
       base >=4.7 && <5
     , bytestring
