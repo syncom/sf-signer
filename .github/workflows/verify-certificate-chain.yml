@@ -1,0 +1,31 @@
+# Chained verification of certificates in data/certs/
+name: "Verify Certificate Chain"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+    chain-verify-certs:
+      name: "chained verification"
+      strategy:
+        fail-fast: false
+        matrix:
+          os: [ubuntu-latest]
+      runs-on: ${{ matrix.os }}
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Verify chain of certificates
+        run: |
+          set -euxo pipefail
+          cd ${{ github.workspace }}
+          openssl version
+          echo "b4315fbec829898ed0875635fbee52351427365eecea2a82c45b60abc884bf7f  data/ca.pem" \
+            | sha256sum -c --status || \
+            { echo "error: data/ca.pem may be tampered with"; exit 1; }
+          for f in $(find data/certs -name *.pem -type f); do
+            openssl verify -CAfile data/ca.pem "$f"
+          done
