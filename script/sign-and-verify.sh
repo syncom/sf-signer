@@ -13,7 +13,8 @@ readonly CERT_FILE
 
 SFSIGNER_EXE="${PROJECT_ROOT}/build/sfsigner"
 
-export SFSIGNER_PRIVATE_KEY="$(cat "${PROJECT_ROOT}/test/private.key")"
+SFSIGNER_PRIVATE_KEY="$(cat "${PROJECT_ROOT}/test/private.key")"
+export SFSIGNER_PRIVATE_KEY
 
 for i in $(seq 20); do
   len=$((2**i))
