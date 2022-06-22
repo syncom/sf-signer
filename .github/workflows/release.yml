@@ -75,12 +75,9 @@ jobs:
           set -euxo pipefail
           cd ${{ github.workspace }}
           EXE="build/sfsigner-${OS}-${ARCH}"
-          "${SFSIGNER0_EXE}" sign -c data/certs/sfsigner.pem \
-            -o "${EXE}.sig" "${EXE}"
+          "${SFSIGNER0_EXE}" sign -c data/certs/sfsigner.pem -o "${EXE}.sig" "${EXE}"
           # Self-check: verify signature
-          "${SFSIGNER0_EXE}" verify -p "${EXE}" -s "${EXE}.sig" \
-            -c data/certs/sfsigner.pem -t data/ca.pem
-
+          "${SFSIGNER0_EXE}" verify -p "${EXE}" -s "${EXE}.sig" -c data/certs/sfsigner.pem -t data/ca.pem
         env:
           SFSIGNER_PRIVATE_KEY: ${{ secrets.SFSIGNER_PRIVATE_KEY }}
 
