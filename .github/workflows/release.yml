@@ -39,6 +39,24 @@ jobs:
           echo "OS=$(echo $(uname -s) | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           echo "ARCH=$(uname -m)" >> $GITHUB_ENV
 
+      - name: Download and validate sfsigner v0.0.0
+        run: |
+          set -euxo pipefail
+          cd ${{ github.workspace }}
+          mkdir -p dogfood
+          SFSIGNER0_URL="https://github.com/syncom/sf-signer/releases/download/v0.0.0/sfsigner-${OS}-${ARCH}"
+          SFSIGNER0_EXE="dogfood/sfsigner0"
+          echo "SFSIGNER0_EXE=${{ github.workspace }}/dogfood/sfsigner0" >> $GITHUB_ENV
+          curl -L "${SFSIGNER0_URL}" -o "${SFSIGNER0_EXE}"
+          # linux-x86_64
+          EXPECTED_SUM1="7cfd5c00b8bc7215bc99972017da1837c514856db6d72b8e44e9136cb4fe9050"
+          # darwin-x86_64
+          EXPECTED_SUM2="3e8692fa751983b75b11392968b6244e48b8b56a3363257286840ac35a696c06"
+          CHECKSUM="$(sha256sum "${SFSIGNER0_EXE}" | cut -f1 -d' ')"
+          [ "$CHECKSUM" = "$EXPECTED_SUM1" ] || [ "$CHECKSUM" = "$EXPECTED_SUM2" ] || exit 1
+          chmod +x "${SFSIGNER0_EXE}"
+          "${SFSIGNER0_EXE}" version
+
       - name: Build at tagged revision
         run: |
           set -euxo pipefail
@@ -52,13 +70,17 @@ jobs:
           fi
           mv build/sfsigner build/sfsigner-"$OS"-"$ARCH"
 
-      - name: Sign artifact using itself
+      - name: Sign artifact using sfsigner v0.0.0
         run: |
+          set -euxo pipefail
+          cd ${{ github.workspace }}
           EXE="build/sfsigner-${OS}-${ARCH}"
-          "${EXE}" sign \
-            -c data/certs/sfsigner.pem \
-            -o "${EXE}.sig" \
-            "${EXE}"
+          "${SFSIGNER0_EXE}" sign -c data/certs/sfsigner.pem \
+            -o "${EXE}.sig" "${EXE}"
+          # Self-check: verify signature
+          "${SFSIGNER0_EXE}" verify -p "${EXE}" -s "${EXE}.sig" \
+            -c data/certs/sfsigner.pem -t data/ca.pem
+
         env:
           SFSIGNER_PRIVATE_KEY: ${{ secrets.SFSIGNER_PRIVATE_KEY }}
 
