@@ -57,7 +57,7 @@ smimeVerify :: Turtle.FilePath -> Turtle.FilePath -> Turtle.FilePath -> Maybe Tu
 smimeVerify content_file signature_file certificate_file cacert_file = do
   payload' <- L.readFile $ T.unpack  (format fp content_file)
   let payload = Char8.unpack payload'
-  signature <- readFile (T.unpack  (format fp signature_file))
+  signature <- replaceSignaturePemHeader <$> readFile (T.unpack  (format fp signature_file))
   signature_pkcs7 <- readPkcs7 signature
   certificate <- readFile (T.unpack (format fp certificate_file))
   certificate_x509 <- readX509 certificate
@@ -80,3 +80,6 @@ verifyStatus :: Pkcs7VerifyStatus -> Bool
 verifyStatus (Pkcs7VerifySuccess (Just _)) = True
 verifyStatus (Pkcs7VerifySuccess Nothing) = True
 verifyStatus Pkcs7VerifyFailure = False
+
+replaceSignaturePemHeader :: String -> String
+replaceSignaturePemHeader = T.unpack . T.replace "SIGNED MESSAGE" "PKCS7" . T.pack
