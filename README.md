@@ -20,7 +20,10 @@ make clean
 
 ## How to use
 
-1. Build `sfsigner` (generated artifect is `build/sfsigner`)
+1. You may use the prebuilt release binaries if you are on
+`linux-x86_64` and `darwin-x86_64` platforms. Otherwise, you can always
+build `sfsigner` from source (the generated artifect is
+`build/sfsigner`).
 
    ```bash
    make build
@@ -33,7 +36,7 @@ make clean
    make static-build
    ```
 
-2. Sign file
+2. Sign and verify files
 
    - Synopsis
 
@@ -106,3 +109,8 @@ make clean
      certstrap request-cert --common-name "testuser@sfsigner.example" --key-bits 4096
      certstrap sign testuser_sfsigner.example --CA ExampleRootCA
      ```
+
+## How to sign artifact in CI release flow
+
+Please refer to [How to sign a release artifact in GitHub
+Actions](docs/sign-artifact-in-gha.md) for a setup.
