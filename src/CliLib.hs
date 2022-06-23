@@ -24,11 +24,15 @@ versionParser =
 
 signParser :: Parser (IO ())
 signParser =
-  subcommand "sign" "Sign file" parseSign
+  subcommand "sign"
+    "Sign payload file.\n\
+    \    Private signing key is obtained from environment variable\n\
+    \    SFSIGNER_PRIVATE_KEY. Only RSA keys are supported currently."
+    parseSign
 
 verifyParser :: Parser (IO ())
 verifyParser =
-  subcommand "verify" "Verify signature" parseVerify
+  subcommand "verify" "Verify signature of payload file" parseVerify
 
 -- "version" subcommand options
 version' :: IO ()
@@ -45,7 +49,7 @@ data SettingsSignCmd = SettingsSignCmd
   }
 
 payloadParser :: Parser FilePath
-payloadParser = argPath "payload" "The payload file to sign"
+payloadParser = argPath "payload" "The payload file to sign or verify"
 
 certificateParser :: Parser FilePath
 certificateParser = optPath "cert" 'c' "Signer's X509 certificate in PEM"
@@ -80,9 +84,6 @@ data SettingsVerifyCmd = SettingsVerifyCmd
   , settingsVerifyCmdCACert      :: Maybe FilePath
   }
 
-payloadParser' :: Parser FilePath
-payloadParser' = optPath "payload" 'p' "The payload file to verify"
-
 signatureParser :: Parser FilePath
 signatureParser = optPath "signature" 's' "The PKCS#7 signature in PEM"
 
@@ -92,7 +93,7 @@ cacertParser = optional (optPath "cacert" 't'
 
 settingsVerifyCmdParser :: Parser SettingsVerifyCmd
 settingsVerifyCmdParser =
-  SettingsVerifyCmd <$> payloadParser'
+  SettingsVerifyCmd <$> payloadParser
                     <*> signatureParser
                     <*> certificateParser
                     <*> cacertParser

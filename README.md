@@ -47,8 +47,10 @@ make clean
 
      Available commands:
        version                  Show version
-       sign                     Sign file
-       verify                   Verify signature
+       sign                     Sign payload file.
+         Private signing key is obtained from environment variable
+         SFSIGNER_PRIVATE_KEY. Only RSA keys are supported currently.
+       verify                   Verify signature of payload file
      ```
 
    - Example signing commands
@@ -69,13 +71,13 @@ make clean
 
      ```bash
      # Use test data. Should get "Verification: success"
-     build/sfsigner verify --payload test/payload.txt \
+     build/sfsigner verify test/payload.txt \
        --signature test/signature.pem \
        --cert test/certificate.pem \
        --cacert test/cacert.pem
      # If cacert is not present, skip chanined verification. Should get
      # "Verification: success"
-     build/sfsigner verify --payload test/payload.txt \
+     build/sfsigner verify test/payload.txt \
        --signature test/signature.pem \
        --cert test/certificate.pem
      ```

@@ -29,11 +29,11 @@ for i in $(seq 20); do
   echo "Signature is written to ${sig}"
 
   echo "Verify payload against good signature"
-  "${SFSIGNER_EXE}" verify -p "${payload}" -s "${sig}" -c "${CERT_FILE}"
+  "${SFSIGNER_EXE}" verify "${payload}" -s "${sig}" -c "${CERT_FILE}"
 
   echo "Verify payload against bad signature"
   echo "A" >> "${payload}"
-  if ! "${SFSIGNER_EXE}" verify -p "${payload}" -s "${sig}" -c "${CERT_FILE}"; then
+  if ! "${SFSIGNER_EXE}" verify "${payload}" -s "${sig}" -c "${CERT_FILE}"; then
     echo "Tampered payload failed signature verification as expected"
   else
     exit 1
