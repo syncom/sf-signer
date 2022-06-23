@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           sf-signer
-version:        0.0.0
+version:        0.1.0
 description:    Please see the README on GitHub at <https://github.com/syncom/sf-signer#readme>
 homepage:       https://github.com/syncom/sf-signer#readme
 bug-reports:    https://github.com/syncom/sf-signer/issues
