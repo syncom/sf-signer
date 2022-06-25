@@ -34,25 +34,14 @@ library:
   - foldl
   - HsOpenSSL
 
+# Pro-tip from https://stackoverflow.com/questions/65013554/force-static-compilation-in-stack
+_buildopt: !include ./build-options.yaml
+
 executables:
   sfsigner:
     main:                Main.hs
     source-dirs:         app
-    ghc-options:
-    - -static
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    # "#REMOVEME|" to be removed by tools. Do not edit
-    ###START STATIC LINKING###
-    #REMOVEME|cc-options:
-    #REMOVEME|- -static
-    #REMOVEME|ld-options:
-    #REMOVEME|- -static
-    #REMOVEME|- -pthread
-    #REMOVEME|# cf https://github.com/icfpcontest2020/starterkit-haskell/issues/2#issuecomment-774894327
-    #REMOVEME|- -fuse-ld=bfd
-    ###END STATIC LINKING###
+    <<: *build_options
     dependencies:
     - sf-signer
 

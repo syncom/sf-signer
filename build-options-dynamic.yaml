@@ -1,0 +1,7 @@
+- &build_options
+  ghc-options:
+  - -static
+  - -threaded
+  - -rtsopts
+  - -with-rtsopts=-N
+  
