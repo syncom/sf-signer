@@ -1,0 +1,14 @@
+- &build_options
+  ghc-options:
+  - -static
+  - -threaded
+  - -rtsopts
+  - -with-rtsopts=-N
+  cc-options:
+  - -static
+  ld-options:
+  - -static
+  - -pthread
+  # cf https://github.com/icfpcontest2020/starterkit-haskell/issues/2#issuecomment-774894327
+  - -fuse-ld=bfd
+  
