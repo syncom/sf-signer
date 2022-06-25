@@ -5,21 +5,21 @@ build_dir := $(mkfile_dir)/build
 package := sf-signer
 
 package_yaml := $(mkfile_dir)/package.yaml
+package_yaml_static := $(mkfile_dir)/package-static.yaml
+package_yaml_dynamic := $(mkfile_dir)/package-dynamic.yaml
 stack_yaml := STACK_YAML="$(mkfile_dir)/stack.yaml"
 stack := $(stack_yaml) stack
 
 export PATH := $(PATH):$(build_dir)
 
 build:
+	ln -sf $(package_yaml_dynamic) $(package_yaml)
 	$(stack) --copy-bins --local-bin-path build build $(package)
 
-# Build static binary for Linux. Patch package.yaml to add corresponding
-# options.
+# Build static binary for Linux.
 static-build:
-	cp $(package_yaml) $(package_yaml).bak
-	sed -i 's/\#REMOVEME|//g' $(package_yaml)
+	ln -sf $(package_yaml_static) $(package_yaml)
 	$(stack) --copy-bins --local-bin-path build build $(package)
-	mv $(package_yaml).bak $(package_yaml)
 
 test:
 	$(stack) test $(package)
