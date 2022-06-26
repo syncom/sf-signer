@@ -56,6 +56,9 @@ an environment secret in the `release` environment.
      run: |
        cd ${{ github.workspace }}
        ARTIFACT_FILE=/path/to/artifact
+       # Assume private key uses empty password. If private key is
+       # password protected, you may need to use an expect script to
+       # feed the password to prompt
        sfsigner sign "${ARTIFACT_FILE}" -c data/certs/sfsigner.pem -o "${ARTIFACT_FILE}.sig" 
      env:
        SFSIGNER_PRIVATE_KEY: ${{ secrets.SFSIGNER_PRIVATE_KEY }}
