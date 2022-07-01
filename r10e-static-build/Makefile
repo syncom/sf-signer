@@ -9,8 +9,8 @@ sfsigner-r10e:
 clean:
 	rm -rf $(mkfile_dir)/out
 
-# Prune Docker image
+# Prune Docker images
 dockerclean:
-	docker image prune -a -f --filter=repo="sfsigner"
+	docker system prune -a -f
 
 .PHONY: sfsigner-r10e clean dockerclean
