@@ -22,14 +22,14 @@
   hackage-version ? "2021-07-12T00:00:00Z",
   package-name ? "name of the stack package",
   ghc-version ? "ghc8104", # Must be in nixpkgs and must match that determined by stack.yaml
-  nixpkgs-revision ? "d00b5a5fa6fe8bdf7005abb06c46ae0245aec8b5",
+  #nixpkgs-revision ? "d00b5a5fa6fe8bdf7005abb06c46ae0245aec8b5",
   static-haskell-nix-dir ? "/path/to/static-haskell-nix/repo",
 }:
 let
   cabalPackageName = package-name;
   compiler = ghc-version;
 
-  pkgs = import (fetchTarball ("https://github.com/NixOS/nixpkgs/archive/" + nixpkgs-revision + ".tar.gz")) {};
+  pkgs = import ./nixpkgs {};
 
   stack2nix-script = import (static-haskell-nix-dir + "/static-stack2nix-builder/stack2nix-script.nix") {
     inherit pkgs;

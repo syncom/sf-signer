@@ -11,23 +11,35 @@ LABEL repo="sfsigner"
 ###############################################################
 WORKDIR /build
 
+# NIXPKGS_COMMIT_SHA should match nixpkgs revision pinned at SHN_COMMIT_SHA of
+# static-haskell-nix
+ENV NIXPKGS_COMMIT_SHA="d00b5a5fa6fe8bdf7005abb06c46ae0245aec8b5"
 ENV SHN_COMMIT_SHA="bd66b86b72cff4479e1c76d5916a853c38d09837"
 RUN nix-env -i git && \
     mkdir -p /build/static-haskell-nix && \
-    cd static-haskell-nix && \
+    cd /build/static-haskell-nix && \
     git init && \
     git remote add origin https://github.com/nh2/static-haskell-nix.git && \
     git fetch --depth 1 origin ${SHN_COMMIT_SHA} && \
     git checkout FETCH_HEAD && \
-    cd ../ && \
-    mkdir -p /build/sf-signer
+    mkdir -p /build/nixpkgs && \
+    cd /build/nixpkgs && \
+    git init && \
+    git remote add origin https://github.com/NixOS/nixpkgs.git && \
+    git fetch --depth 1 origin ${NIXPKGS_COMMIT_SHA} && \
+    git checkout FETCH_HEAD && \
+    mkdir -p /build/sf-signer && \
+    cd /build
 
+ENV NIX_PATH=nixpkgs=/build/nixpkgs
 #########################################################
 # Step 2: Copy files
 #########################################################
 COPY src/ /build/sf-signer/src
 COPY app/ /build/sf-signer/app
+COPY test/ /build/sf-signer/test
 COPY Setup.hs /build/sf-signer/Setup.hs
+COPY README.md /build/sf-signer/README.md
 COPY build-options-dynamic.yaml /build/sf-signer/build-options.yaml
 COPY package.yaml /build/sf-signer/package.yaml
 COPY stack.yaml /build/sf-signer/stack.yaml
@@ -35,7 +47,10 @@ COPY stack.yaml.lock /build/sf-signer/stack.yaml.lock
 COPY sf-signer.cabal /build/sf-signer/sf-signer.cabel
 COPY r10e-static-build/default.nix /build/default.nix
 
-# Build final artifact
+#########################################################
+# Step 3: Build final artifact
+#########################################################
+
 RUN $(nix-build --no-link -A fullBuildScript \
   --argstr src-dir ${PWD}/sf-signer \
   --argstr package-name sf-signer \
