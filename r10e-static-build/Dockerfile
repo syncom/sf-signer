@@ -51,8 +51,9 @@ COPY r10e-static-build/default.nix /build/default.nix
 # Step 3: Build final artifact
 #########################################################
 
-RUN $(export NIXPATH=nixpkgs=/build/nixpkgs; \
-  nix-build --no-link -A fullBuildScript \
+RUN BUILD_SCRIPT=$(nix-build --no-link -A fullBuildScript \
+  -j auto \
   --argstr src-dir ${PWD}/sf-signer \
   --argstr package-name sf-signer \
-  --argstr static-haskell-nix-dir ${PWD}/static-haskell-nix)
+  --argstr static-haskell-nix-dir ${PWD}/static-haskell-nix) && \
+  ${BUILD_SCRIPT}

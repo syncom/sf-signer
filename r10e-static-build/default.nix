@@ -12,24 +12,23 @@
 #       --argstr package-name sf-signer \
 #       --argstr static-haskell-nix-dir ${PWD}/static-haskell-nix)
 #
-# The default values for `hackage-version`, `ghc-version` and
-# `nixpkgs-revision` should work out of the box. They can also be
-# treaked to suit your need.
+# The default values for `hackage-version` and `ghc-version` should work out of
+# the box. They can also be treaked to suit your need.
 #
 {
+  nixpkgs ? <nixpkgs>,
   src-dir ? "/absolute/path/to/package/source",
   stack2nix-output-path ? "custom-stack2nix-output.nix",
   hackage-version ? "2021-07-12T00:00:00Z",
   package-name ? "name of the stack package",
   ghc-version ? "ghc8104", # Must be in nixpkgs and must match that determined by stack.yaml
-  #nixpkgs-revision ? "d00b5a5fa6fe8bdf7005abb06c46ae0245aec8b5",
   static-haskell-nix-dir ? "/path/to/static-haskell-nix/repo",
 }:
 let
   cabalPackageName = package-name;
   compiler = ghc-version;
 
-  pkgs = import ./nixpkgs {};
+  pkgs = import "${nixpkgs}/default.nix" {};
 
   stack2nix-script = import (static-haskell-nix-dir + "/static-stack2nix-builder/stack2nix-script.nix") {
     inherit pkgs;
@@ -76,8 +75,9 @@ let
   # Full invocation, including pinning `nix` version itself.
   fullBuildScript = pkgs.writeShellScript "stack2nix-and-build-script.sh" ''
     set -euxo pipefail
+    export NIX_PATH=nixpkgs=${pkgs.path}
     STACK2NIX_OUTPUT_PATH=$(${stack2nix-script})
-    ${pkgs.nix}/bin/nix-build -A static_package \
+    ${pkgs.nix}/bin/nix-build -A static_package -j auto \
       --argstr stack2nix-output-path "$STACK2NIX_OUTPUT_PATH" \
       --argstr package-name "${package-name}" \
       --argstr static-haskell-nix-dir "${static-haskell-nix-dir}" \
