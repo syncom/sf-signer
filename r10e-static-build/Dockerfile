@@ -57,5 +57,4 @@ RUN BUILD_SCRIPT=$(nix-build --no-link -A fullBuildScript \
   --argstr package-name sf-signer \
   --argstr static-haskell-nix-dir ${PWD}/static-haskell-nix) && \
   echo ${BUILD_SCRIPT} && cat ${BUILD_SCRIPT} && \
-  exit 0 && \
   ${BUILD_SCRIPT}
