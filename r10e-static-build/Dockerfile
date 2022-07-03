@@ -14,12 +14,12 @@ WORKDIR /build
 # NIXPKGS_COMMIT_SHA should match nixpkgs revision pinned at SHN_COMMIT_SHA of
 # static-haskell-nix
 ENV NIXPKGS_COMMIT_SHA="d00b5a5fa6fe8bdf7005abb06c46ae0245aec8b5"
-ENV SHN_COMMIT_SHA="bd66b86b72cff4479e1c76d5916a853c38d09837"
+ENV SHN_COMMIT_SHA="75658b06789f6bd7c7aee26044dc60c0f13e9166"
 RUN nix-env -i git && \
     mkdir -p /build/static-haskell-nix && \
     cd /build/static-haskell-nix && \
     git init && \
-    git remote add origin https://github.com/nh2/static-haskell-nix.git && \
+    git remote add origin https://github.com/syncom/static-haskell-nix.git && \
     git fetch --depth 1 origin ${SHN_COMMIT_SHA} && \
     git checkout FETCH_HEAD && \
     mkdir -p /build/nixpkgs && \
@@ -31,7 +31,8 @@ RUN nix-env -i git && \
     mkdir -p /build/sf-signer && \
     cd /build
 
-ENV NIX_PATH=nixpkgs=/build/nixpkgs
+#ENV NIX_PATH=nixpkgs=/build/nixpkgs
+ENV NIX_PATH=
 #########################################################
 # Step 2: Copy files
 #########################################################
@@ -56,4 +57,5 @@ RUN BUILD_SCRIPT=$(nix-build --no-link -A fullBuildScript \
   --argstr src-dir ${PWD}/sf-signer \
   --argstr package-name sf-signer \
   --argstr static-haskell-nix-dir ${PWD}/static-haskell-nix) && \
+  echo ${BUILD_SCRIPT} && exit 0 && \
   ${BUILD_SCRIPT}

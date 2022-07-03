@@ -16,7 +16,6 @@
 # the box. They can also be treaked to suit your need.
 #
 {
-  nixpkgs ? <nixpkgs>,
   src-dir ? "/absolute/path/to/package/source",
   stack2nix-output-path ? "custom-stack2nix-output.nix",
   hackage-version ? "2021-07-12T00:00:00Z",
@@ -28,7 +27,7 @@ let
   cabalPackageName = package-name;
   compiler = ghc-version;
 
-  pkgs = import "${nixpkgs}/default.nix" {};
+  pkgs = import ./nixpkgs {};
 
   stack2nix-script = import (static-haskell-nix-dir + "/static-stack2nix-builder/stack2nix-script.nix") {
     inherit pkgs;
