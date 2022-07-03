@@ -27,7 +27,7 @@ let
   cabalPackageName = package-name;
   compiler = ghc-version;
 
-  pkgs = import ./nixpkgs {};
+  pkgs = import <nixpkgs> {};
 
   stack2nix-script = import (static-haskell-nix-dir + "/static-stack2nix-builder/stack2nix-script.nix") {
     inherit pkgs;
