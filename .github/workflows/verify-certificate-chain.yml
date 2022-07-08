@@ -27,5 +27,13 @@ jobs:
             | sha256sum -c --status || \
             { echo "error: data/ca.pem may be tampered with"; exit 1; }
           for f in $(find data/certs -name *.pem -type f); do
+            cert_expiry="$(openssl x509 -enddate -noout -in "${f}" | cut -f2 -d'=')"
+            cert_expiry_unix_ts="$(date --date "${cert_expiry}" "+%s")"
+            now_unix_ts="$(date +%s --utc)"
+            # Info about cert expiry. Do not fail.
+            [ "$cert_expiry_unix_ts" -gt "$now_unix_ts" ] \
+              || echo "Info: Certificate ${f} expired on ${cert_expiry}"
+            # Skip certificate expiration check by manipulating attime
+            attime=$(( cert_expiry_unix_ts - 1 ))
             openssl verify -CAfile data/ca.pem "$f"
           done
