@@ -35,5 +35,5 @@ jobs:
               || echo "Info: Certificate ${f} expired on ${cert_expiry}"
             # Skip certificate expiration check by manipulating attime
             attime=$(( cert_expiry_unix_ts - 1 ))
-            openssl verify -CAfile data/ca.pem "$f"
+            openssl verify -CAfile data/ca.pem -attime "${attime}" "$f"
           done
