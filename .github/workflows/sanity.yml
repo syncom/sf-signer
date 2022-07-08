@@ -22,12 +22,14 @@ jobs:
         run: |
           if [ ${{ matrix.os }} = 'ubuntu-latest' ]; then
             sudo apt-get update
+            sudo apt-get install -y faketime
           fi
           sudo curl -sSL https://get.haskellstack.org/ | sh -s - -f
           stack --version
           if [ ${{ matrix.os }} = 'macos-latest' ]; then
             # for `sha256sum`
             brew install coreutils
+            brew install libfaketime
           fi
       - name: Build
         run: |
