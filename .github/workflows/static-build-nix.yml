@@ -1,0 +1,23 @@
+name: "Sanity Check for Static Build with Nix"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  sanity-checks:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: "Static Build with Nix"
+        run: |
+          cd ${{ github.workspace }}/r10e-static-build
+          make sfsigner-r10e
