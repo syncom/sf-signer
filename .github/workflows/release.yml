@@ -4,7 +4,7 @@ on:
       - 'v*'
 name: "Release Deployable"
 jobs:
-  release-squbi:
+  release-sfsigner:
     name: "Release sfsigner"
     runs-on: ${{ matrix.os }}
     environment: "release"
