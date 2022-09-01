@@ -22,7 +22,7 @@ make clean
 
 1. You may use the prebuilt release binaries if you are on
 `linux-x86_64` and `darwin-x86_64` platforms. Otherwise, you can always
-build `sfsigner` from source (the generated artifect is
+build `sfsigner` from source (the generated artifact is
 `build/sfsigner`).
 
    ```bash
@@ -78,7 +78,7 @@ build `sfsigner` from source (the generated artifect is
        --signature test/signature.pem \
        --cert test/certificate.pem \
        --cacert test/cacert.pem
-     # If cacert is not present, skip chanined verification. Should get
+     # If cacert is not present, skip chained verification. Should get
      # "Verification: success"
      build/sfsigner verify test/payload.txt \
        --signature test/signature.pem \
