@@ -88,12 +88,24 @@ build `sfsigner` from source (the generated artifact is
      Alternatively, signature verification can be done with `openssl smime`
 
      ```bash
+     # Verification chained to CA cert
      openssl smime -verify \
        -binary \
        -content test/payload.txt \
        -in test/signature.pem -inform PEM \
        -certfile test/certificate.pem \
-       -noverify
+       -nointern \
+       -CAfile test/cacert.pem \
+       -purpose any
+     # Use leaf certificate as root of trust
+     openssl smime -verify \
+       -binary \
+       -content test/payload.txt \
+       -in test/signature.pem -inform PEM \
+       -certfile test/certificate.pem \
+       -nointern \
+       -CAfile test/certificate.pem \
+       -purpose any
      ```
 
      Currently, only RSA signing keys are supported. An example Public

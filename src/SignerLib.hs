@@ -64,7 +64,7 @@ smimeVerify content_file signature_file certificate_file cacert_file = do
   store <- newX509Store
   case cacert_file of
     -- Skip chained verification
-    Nothing -> verifyStatus <$> pkcs7Verify signature_pkcs7 [ certificate_x509 ] store (Just payload) [Pkcs7NoVerify]
+    Nothing -> verifyStatus <$> pkcs7Verify signature_pkcs7 [ certificate_x509 ] store (Just payload) [Pkcs7NoIntern, Pkcs7NoVerify]
     -- Perform chained verification
     Just x -> do
       cacert <- readFile (T.unpack (format fp x))
