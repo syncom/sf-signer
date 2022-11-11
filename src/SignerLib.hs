@@ -63,7 +63,8 @@ smimeVerify content_file signature_file certificate_file cacert_file = do
   certificate_x509 <- readX509 certificate
   store <- newX509Store
   case cacert_file of
-    -- Skip chained verification
+    -- Skip chained verification with CA cert, but still verify signature using
+    -- leaf cert
     Nothing -> verifyStatus <$> pkcs7Verify signature_pkcs7 [ certificate_x509 ] store (Just payload) [Pkcs7NoIntern, Pkcs7NoVerify]
     -- Perform chained verification
     Just x -> do

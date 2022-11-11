@@ -39,10 +39,14 @@ prop_smimeVerify = monadicIO $ do
   run $ writeTempFile signature signatureStr
   certificate:_ <- Turtle.fold makeTempFile Fold.list
   run $ writeTempFile certificate certificateStr
+  wrongCertificate:_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile wrongCertificate wrongCertificateStr
   result0 <- run $ smimeVerify payload signature certificate Nothing
   result1 <- run $ smimeVerify payloadTampered signature certificate Nothing
+  result2 <- run $ smimeVerify payload signature wrongCertificate Nothing
   assert result0
   assert (not result1)
+  assert (not result2)
 
 payloadStr :: String
 payloadStr = "The answer is 42."
@@ -98,6 +102,38 @@ certificateStr = "-----BEGIN CERTIFICATE-----\n\
   \dB2XAGJtUYsSvfdVADunaw+zwgoqm9mFF2YBruq0E8ccKMg+uAEhkqpa8uKHoF0P\n\
   \IqK4kmL5mZVdvE5IrVQ/CU81bvq8MIKPPrXxbGQkDX5mGgN9EtLsbsYJZpgSr4zj\n\
   \RGItirRguhphioaYGsi5teGPgCyvMr3W+AWS7XFg/RE8QvZI5gZFi9EZobQ=\n\
+  \-----END CERTIFICATE-----"
+
+wrongCertificateStr :: String
+wrongCertificateStr = "-----BEGIN CERTIFICATE-----\n\
+  \MIIFOTCCAyGgAwIBAgIRAO85O5VwlXDP6epw6Cj01v0wDQYJKoZIhvcNAQELBQAw\n\
+  \GDEWMBQGA1UEAxMNRXhhbXBsZVJvb3RDQTAeFw0yMjExMTEwNTE0MTlaFw0yMzEy\n\
+  \MjAyMDEwNDdaMCUxIzAhBgNVBAMMGndyb25ndXNlckBzZnNpZ25lci5leGFtcGxl\n\
+  \MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAvwW9vnx7jFRJuCkji0gL\n\
+  \AtiBBcHMJfUgbRth+vcvnPivS0gS68iStR47XMK/lxgwhqhqJtYbIOd+Lt4+0AKf\n\
+  \JH2der59chSkAyykivvj+1qLh745rabPtNWv60qVQlPsGrhyXOEPO/6VSmDDVWSE\n\
+  \2FGKM3b0zMiDXJGsv6UkrnrD+Ru+vvQc+dKdgex7mCoep19qrCYqPeOA0mmNxdmY\n\
+  \tbZS2Ni/5iFgrY0+7H9CuVfjycEkTmM9Ko3yQIXZVXFMcdL1VEfTf2T9vW1lvZml\n\
+  \zNGeHLQM1eFVOi929koHpNf/JkR/qRBl2Eu+kWJoB78sFdb9H6DQfWKTXZa2lwwZ\n\
+  \InGsoGDNX3FTjrbat5dhJvogcs0jyvIT5framSkJpeR1rmL/FRPWZY5R35OkyqNg\n\
+  \HdnKPvbGKjENB36gVJWGuq6BX3bN3mq6ItXQ5xCr+k883KHBeYgiY8f67vPFZFKn\n\
+  \bMI15WKqQXFB31EdXChiNpTOrxWu2nuLEWrbmAVaJ9IauA/MLGUZbA4FUDobgsmu\n\
+  \AAG3rkA71Dl9fNEQRrixxanCgDRqR5chqFn90GbymqJKsFhvjJbzBSMXm74Nr8EV\n\
+  \lBpE8hbmylMkS/RkUXIkDv3oSN6KYYNobg2KZlJR3kAAi7bnFenZRUuGpUTJHluP\n\
+  \GTOwFMo39J1zPxLJGsGGMCcCAwEAAaNxMG8wDgYDVR0PAQH/BAQDAgO4MB0GA1Ud\n\
+  \JQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAdBgNVHQ4EFgQUGTagDuoW9KepsQNq\n\
+  \sqTX1Bwcem4wHwYDVR0jBBgwFoAUqzxCUv1OjVhHFp+71Gzsj26YY2AwDQYJKoZI\n\
+  \hvcNAQELBQADggIBACC1x9AlYw2urcC/Psb8jFG1kGbyrTcJP92QZCZRWP0dj0Yo\n\
+  \MqNIkMCp9+GkIyxl/kfwSUQDNZof49yAUgPSckwIsRrBSb6LW/xdTAHGGvTDj++2\n\
+  \WK3MuQzmhRPpZ+DFJhWhzm8cspK3lJw91zWkLnM9IBVh9pc3ZvYq02j42kjXqrv2\n\
+  \xBI7tv7rJ965Gg9G1/ADHARvrJs/sPpiw+RcgPHBgFLTNaa2AXelZb7nR+UfJ1gt\n\
+  \kpLQAJYyG0tW6cy7b0HWhU1V6aArfOrx3iLenLU6ULBcMnIeK3au6N1/UXPWLACo\n\
+  \nn4y8qGrfpYmm0xw83zneVtsAlh9q5C0mUipbSynWt3bkz2x78H+BvubuIemkshr\n\
+  \LQVG2mw+ptx+mjVKw/wN4+ytkatzXQC6h9MV0zj5FJNLDl32lceoR5siRZanbMeV\n\
+  \F+RR3CMxcwY4v9PCUdSeHylt5ZHTT+CbiB/73v2hz7PIU5bto5j7uwS8fphdegWv\n\
+  \rmGFb3TPnyoKninKVZCDBFImut3VZYfwz3WMhjONPLv8swQ/kHQXNeyvFJnOehGf\n\
+  \IMTP3rtrADrVcJnenGtuObxp0JaI2Qnn21Zl1in6zEJ4jKNad5wGDY+yf9JHB/b+\n\
+  \hyBz4DxE5VsE5FLRdQz4a9cQ5narweIfDsWAAPRKfVuKzVLlxzIfjXA1/nUs\n\
   \-----END CERTIFICATE-----"
 
 sha256Sum' :: Turtle.FilePath -> Shell Line
