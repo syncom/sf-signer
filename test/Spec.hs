@@ -8,6 +8,7 @@ import Turtle
 import Prelude hiding (FilePath)
 import Control.Foldl as Fold
 import System.Exit
+import Control.Concurrent
 
 -- Cross check on non-null payload
 prop_sha256CrossCheck :: String -> Property
@@ -47,14 +48,13 @@ prop_smimeVerify = monadicIO $ do
   result0 <- run $ smimeVerify payload signature certificate Nothing
   result1 <- run $ smimeVerify payloadTampered signature certificate Nothing
   result2 <- run $ smimeVerify payload signature wrongCertificate Nothing
+  assert result0
+  assert (not result1)
+  assert (not result2)
   -- Verify, chaining to CA cert
   resultChained0 <- run $ smimeVerify payload signature certificate (Just caCertificate)
   resultChained1 <- run $ smimeVerify payloadTampered signature certificate (Just caCertificate)
   resultChained2 <- run $ smimeVerify payload signature wrongCertificate (Just caCertificate)
-  -- assertions
-  assert result0
-  assert (not result1)
-  assert (not result2)
   assert resultChained0
   assert (not resultChained1)
   assert (not resultChained2)
