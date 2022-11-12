@@ -29,9 +29,9 @@ prop_sha256OfNull = monadicIO $ do
   nullsum1:_ <-  Turtle.fold (fakeSign "/dev/null") Fold.list
   assert $ nullsum1 == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
--- Signature verification check
-prop_smimeVerify :: Property
-prop_smimeVerify = monadicIO $ do
+-- Signature verification checks
+prop_smimeVerify_noca :: Property
+prop_smimeVerify_noca = monadicIO $ do
   payload:_ <- Turtle.fold makeTempFile Fold.list
   run $ writeTempFile payload payloadStr
   payloadTampered:_ <- Turtle.fold makeTempFile Fold.list
@@ -42,8 +42,6 @@ prop_smimeVerify = monadicIO $ do
   run $ writeTempFile certificate certificateStr
   wrongCertificate:_ <- Turtle.fold makeTempFile Fold.list
   run $ writeTempFile wrongCertificate wrongCertificateStr
-  caCertificate:_ <- Turtle.fold makeTempFile Fold.list
-  run $ writeTempFile caCertificate caCertStr
   -- Skip chaining back to CA cert
   result0 <- run $ smimeVerify payload signature certificate Nothing
   result1 <- run $ smimeVerify payloadTampered signature certificate Nothing
@@ -51,14 +49,28 @@ prop_smimeVerify = monadicIO $ do
   assert result0
   assert (not result1)
   assert (not result2)
+
+prop_smimeVerify_withca :: Property
+prop_smimeVerify_withca = monadicIO $ do
+  payload':_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile payload' payloadStr
+  payloadTampered':_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile payloadTampered' payloadStrTampered
+  signature':_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile signature' signatureStr
+  certificate':_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile certificate' certificateStr
+  wrongCertificate':_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile wrongCertificate' wrongCertificateStr
+  caCertificate:_ <- Turtle.fold makeTempFile Fold.list
+  run $ writeTempFile caCertificate caCertStr
   -- Verify, chaining to CA cert
-  resultChained0 <- run $ smimeVerify payload signature certificate (Just caCertificate)
-  resultChained1 <- run $ smimeVerify payloadTampered signature certificate (Just caCertificate)
-  resultChained2 <- run $ smimeVerify payload signature wrongCertificate (Just caCertificate)
+  resultChained0 <- run $ smimeVerify payload' signature' certificate' (Just caCertificate)
+  resultChained1 <- run $ smimeVerify payloadTampered' signature' certificate' (Just caCertificate)
+  resultChained2 <- run $ smimeVerify payload' signature' wrongCertificate' (Just caCertificate)
   assert resultChained0
   assert (not resultChained1)
   assert (not resultChained2)
-
 payloadStr :: String
 payloadStr = "The answer is 42."
 
@@ -204,7 +216,9 @@ main = do
   result1 <- quickCheckWithResult stdArgs { maxSuccess = 314 } prop_sha256CrossCheck
   putStrLn "[checking sha256 of empty data]"
   result2 <- quickCheckWithResult stdArgs { maxSuccess = 1 } prop_sha256OfNull
-  putStrLn "[checking signature verification]"
-  result3 <- quickCheckWithResult stdArgs { maxSuccess = 1 } prop_smimeVerify
-  unless (isSuccess result1 && isSuccess result2 && isSuccess result3) exitFailure
+  putStrLn "[checking signature verification (no CA)]"
+  result3 <- quickCheckWithResult stdArgs { maxSuccess = 1 } prop_smimeVerify_noca
+  putStrLn "[checking signature verification (with CA)]"
+  result4 <- quickCheckWithResult stdArgs { maxSuccess = 1 } prop_smimeVerify_withca
+  unless (isSuccess result1 && isSuccess result2 && isSuccess result3 && isSuccess result4) exitFailure
   putStrLn "All done!"
