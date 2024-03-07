@@ -26,7 +26,7 @@ jobs:
           fi
 
       - name: "Checkout code"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
         with:
           # Fetch all history for all tags and branches
           fetch-depth: 0
