@@ -4,6 +4,11 @@
 # For advanced use and comprehensive documentation of the format, please see:
 # https://docs.haskellstack.org/en/stable/yaml_configuration/
 
+# A warning or info to be displayed to the user on config load.
+user-message: |
+  Warning (added by new or init): Some packages were found to have names conflicting with others and have been commented out in the packages section.
+  You can omit this message by removing it from stack.yaml
+
 # Resolver to choose a 'specific' stackage snapshot or a compiler version.
 # A snapshot resolver dictates the compiler version and the set of packages
 # to be used for project dependencies. For example:
@@ -17,8 +22,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/4.yaml
+resolver: lts-22.23
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -31,6 +35,10 @@ resolver:
 #   - wai
 packages:
 - .
+# The following packages have been ignored due to package name conflict 
+# with other packages.
+#- r10e-static-build/sf-signer
+
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
@@ -49,7 +57,6 @@ packages:
 # extra-package-dbs: []
 
 # Control whether we use the GHC we find on the path
-# Workaround bug: cf https://www.reddit.com/r/haskell/comments/uk5wg7/hls_not_working/
 system-ghc: true
 #
 # Require a specific version of stack, using version ranges
