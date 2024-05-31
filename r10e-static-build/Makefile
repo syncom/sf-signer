@@ -4,7 +4,7 @@ mkfile_dir := $(dir $(mkfile_path))
 all: sfsigner-r10e
 
 sfsigner-r10e:
-	$(mkfile_dir)/build.sh 2>/dev/null
+	$(mkfile_dir)/build.sh
 
 clean:
 	rm -rf $(mkfile_dir)/out
