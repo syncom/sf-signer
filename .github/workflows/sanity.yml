@@ -18,14 +18,19 @@ jobs:
         with:
           # Fetch all history for all tags and branches
           fetch-depth: 0
-      - name: Install stack etc
+      - name: Setup Haskell
+        uses: haskell-actions/setup@v2
+        with:
+          ghc-version: '9.6.5'
+          enable-stack: true
+          stack-version: '2.15.7'
+      - name: Install dependencies
         run: |
+          stack --version
           if [ ${{ matrix.os }} = 'ubuntu-latest' ]; then
             sudo apt-get update
             sudo apt-get install -y faketime
           fi
-          sudo curl -sSL https://get.haskellstack.org/ | sh -s - -f
-          stack --version
           if [ ${{ matrix.os }} = 'macos-latest' ]; then
             # for `sha256sum`
             brew install coreutils
