@@ -10,7 +10,7 @@ import Data.Version ( showVersion )
 import Control.Foldl as Fold ( list )
 import Data.Maybe ( isJust )
 import Data.Text as T
-import Data.Text.IO as TIO ( putStr )
+import Data.Text.IO as TIO ( putStr, writeFile )
 import SignerLib
 
 parser :: Parser (IO ())
@@ -69,7 +69,7 @@ sign (SettingsSignCmd payload certificate outfile) = do
   signature <- smimeSign payload certificate
   case outfile of
     Just x -> do
-      writeTextFile x signature
+      TIO.writeFile (T.unpack $ format fp x) signature
       stderr ("Signature has been written to " <> inproc "echo" [ format fp x ] Turtle.empty)
     Nothing -> TIO.putStr signature
 

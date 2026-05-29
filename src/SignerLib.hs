@@ -26,7 +26,7 @@ sha256Sum :: Turtle.FilePath -> IO Text
 sha256Sum f = do
   content <- L.readFile $ T.unpack (format fp f)
   let digest = hashlazy content :: Digest SHA256
-  return $ fromString (show digest)
+  return $ fromString (Prelude.show digest)
 
 -- For testing purposes only
 fakeSign :: Turtle.FilePath -> Shell Text
@@ -36,7 +36,7 @@ hasCommand :: T.Text -> IO ()
 hasCommand cmd = do
   result <- try (shells ("command -v " <> cmd <> ">/dev/null") Turtle.empty) :: IO (Either SomeException ())
   case result of
-    Left ex -> die $ T.pack (show ex)
+    Left ex -> die $ T.pack (Prelude.show ex)
     Right s -> return ()
 
 -- Sign file using X509 private key, obtained from an environment
