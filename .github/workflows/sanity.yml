@@ -22,8 +22,8 @@ jobs:
       - name: Install stack etc
         run: |
           if [ ${{ matrix.os }} = 'ubuntu-latest' ]; then
-            sudo apt-get update
-            sudo apt-get install -y faketime
+            sudo apt update
+            sudo apt install -y faketime
           fi
           sudo curl -sSL https://get.haskellstack.org/ | sh -s - -f
           stack --version
@@ -35,12 +35,8 @@ jobs:
       - name: Build
         run: |
           cd ${{ github.workspace }}
-          # Linking statically for Linux, dynamically otherwise
-          if [ ${{ matrix.os }} = 'ubuntu-latest' ]; then
-            make static-build
-          else
-            make build
-          fi
+          # Link dynamically; static linking is a pain, and leave it out for now
+          make build
           file build/sfsigner
       - name: Unit test
         run: |
