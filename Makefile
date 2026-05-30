@@ -37,7 +37,7 @@ test_suite_exe := sf-signer-test
 
 test:
 	$(stack) $(stack_extra_flags) build --test --no-run-tests
-	cp $(stack path --dist-dir)/build/$(test_suite_exe)/$(test_suite_exe) build/
+	cp $$(stack path --dist-dir)/build/$(test_suite_exe)/$(test_suite_exe) build/
 	ls -l build/*
 	faketime "Dec 20 20:00:47 2023 GMT" "build/$(test_suite_exe)"
 else
