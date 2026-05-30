@@ -10,6 +10,7 @@ build_options_static := $(mkfile_dir)/build-options-static.yaml
 build_options_dynamic := $(mkfile_dir)/build-options-dynamic.yaml
 stack_yaml := STACK_YAML="$(mkfile_dir)/stack.yaml"
 stack := $(stack_yaml) stack
+stack_extra_flags := $(STACK_EXTRA_FLAGS)
 # Workaround the expiry of hardcoded test certificate in test/Spec.hs, which
 # expires on Dec 20 20:10:47 2023 GMT, 10 minutes after the faketime.
 # The expiration time of the certificate is obtained with command
@@ -23,15 +24,15 @@ export PATH := $(PATH):$(build_dir)
 
 build:
 	ln -sf $(build_options_dynamic) $(build_options_yaml)
-	$(stack) --copy-bins --local-bin-path build build $(package)
+	$(stack) $(stack_extra_flags) --copy-bins --local-bin-path build build $(package)
 
 # Build static binary for Linux.
 static-build:
 	ln -sf $(build_options_static) $(build_options_yaml)
-	$(stack) --copy-bins --local-bin-path build build $(package)
+	$(stack) $(stack_extra_flags) --copy-bins --local-bin-path build build $(package)
 
 test:
-	$(stack_faketime) test $(package)
+	$(stack_faketime) $(stack_extra_flags) test $(package)
 
 clean:
 	rm -rf $(build_dir) $(mkfile_dir)/.stack-work

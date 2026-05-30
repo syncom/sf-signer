@@ -32,6 +32,7 @@ jobs:
             brew install coreutils
             brew install libfaketime
             brew install openssl@3
+            echo "STACK_EXTRA_FLAGS=--extra-include-dirs=$(brew --prefix openssl@3)/include --extra-lib-dirs=$(brew --prefix openssl@3)/lib" >> $GITHUB_ENV
             echo "PKG_CONFIG_PATH=$(brew --prefix openssl@3)/lib/pkgconfig" >> $GITHUB_ENV
             echo "LDFLAGS=-L$(brew --prefix openssl@3)/lib" >> $GITHUB_ENV
             echo "CPPFLAGS=-I$(brew --prefix openssl@3)/include" >> $GITHUB_ENV
