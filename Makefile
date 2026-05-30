@@ -20,6 +20,12 @@ stack_extra_flags := $(STACK_EXTRA_FLAGS)
 # Ten minutes should be long enough for the tests to run to completion.
 stack_faketime := $(stack_yaml) faketime "Dec 20 20:00:47 2023 GMT" stack
 
+ifeq ($(shell uname -s),Darwin)
+test_stack := $(stack)
+else
+test_stack := $(stack_faketime)
+endif
+
 export PATH := $(PATH):$(build_dir)
 
 build:
@@ -32,7 +38,7 @@ static-build:
 	$(stack) $(stack_extra_flags) --copy-bins --local-bin-path build build $(package)
 
 test:
-	$(stack_faketime) $(stack_extra_flags) test $(package)
+	$(test_stack) $(stack_extra_flags) test $(package)
 
 clean:
 	rm -rf $(build_dir) $(mkfile_dir)/.stack-work
