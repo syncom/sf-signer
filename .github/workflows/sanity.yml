@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-26-intel]
     steps:
       - name: Checkout
         # v6.0.2
@@ -27,7 +27,7 @@ jobs:
           fi
           sudo curl -sSL https://get.haskellstack.org/ | sh -s - -f
           stack --version
-          if [ ${{ matrix.os }} = 'macos-latest' ]; then
+          if [ ${{ runner.os }} = 'macOS' ]; then
             # for `sha256sum`
             brew install coreutils
             brew install libfaketime
