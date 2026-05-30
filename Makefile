@@ -20,14 +20,9 @@ stack_extra_flags := $(STACK_EXTRA_FLAGS)
 # Ten minutes should be long enough for the tests to run to completion.
 stack_faketime := $(stack_yaml) faketime "Dec 20 20:00:47 2023 GMT" stack
 
-ifeq ($(shell uname -s),Darwin)
-test_stack := $(stack)
-else
-test_stack := $(stack_faketime)
-endif
-
 export PATH := $(PATH):$(build_dir)
 
+.PHONY: build
 build:
 	ln -sf $(build_options_dynamic) $(build_options_yaml)
 	$(stack) $(stack_extra_flags) --copy-bins --local-bin-path build build $(package)
@@ -37,8 +32,18 @@ static-build:
 	ln -sf $(build_options_static) $(build_options_yaml)
 	$(stack) $(stack_extra_flags) --copy-bins --local-bin-path build build $(package)
 
+ifeq ($(shell uname -s),Darwin)
+test_suite_exe := sf-signer-test
+
 test:
-	$(test_stack) $(stack_extra_flags) test $(package)
+	$(stack) $(stack_extra_flags) build --test --no-run-tests
+	cp $(stack path --dist-dir)/build/$(test_suite_exe)/$(test_suite_exe) build/
+	ls -l build/*
+	faketime "Dec 20 20:00:47 2023 GMT" "build/$(test_suite_exe)"
+else
+test:
+	$(stack_faketime) $(stack_extra_flags) test $(package)
+endif
 
 clean:
 	rm -rf $(build_dir) $(mkfile_dir)/.stack-work
